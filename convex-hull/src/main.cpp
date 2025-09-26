@@ -31,6 +31,11 @@ int main(int argc, char *argv[])
 
     // Parse input file to extract points
     vector<Point> points = read_points_from_file(input_filename);
+
+    // For testing: generate random points instead of reading from file
+    // string input_filename = "C:\\Users\\alynf\\OneDrive\\Documents\\CSCI-716-Computational-Geometry\\CSCI-716-Computational-Geometry\\convex-hull\\input\\example_points.txt";
+    // std::vector<Point> points = generate_random_points(8000, 100000, 100000);
+
     printf("Points read from file:\n");
     for (const auto &p : points)
     {

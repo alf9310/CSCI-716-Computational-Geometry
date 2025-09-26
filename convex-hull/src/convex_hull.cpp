@@ -1,5 +1,11 @@
 #include "../utils/convex_hull.hpp"
 
+// Compute angle for sorting
+double angle(const Point &origin, const Point &p)
+{
+    return std::atan2(p.second - origin.second, p.first - origin.first);
+}
+
 /**
  * @brief Computes the convex hull of a set of 2D points using the brute-force method.
  *
@@ -50,6 +56,34 @@ std::vector<Point> brute_force_convex_hull(const std::vector<Point> &points)
             }
         }
     }
+
+    // Sort hull points in counter-clockwise order
+
+    // 1. find lowest (y, then x)
+    Point origin = *std::min_element(hull.begin(), hull.end(),
+                                     [](const Point &a, const Point &b)
+                                     {
+                                         return (a.second < b.second) || (a.second == b.second && a.first < b.first);
+                                     });
+
+    // 2. sort by polar angle around origin
+    std::sort(hull.begin(), hull.end(),
+              [&](const Point &a, const Point &b)
+              {
+                  double angA = angle(origin, a);
+                  double angB = angle(origin, b);
+                  if (fabs(angA - angB) < 1e-9)
+                  {
+                      // tie-break by distance
+                      long long da = 1LL * (a.first - origin.first) * (a.first - origin.first) +
+                                     1LL * (a.second - origin.second) * (a.second - origin.second);
+                      long long db = 1LL * (b.first - origin.first) * (b.first - origin.first) +
+                                     1LL * (b.second - origin.second) * (b.second - origin.second);
+                      return da < db;
+                  }
+                  return angA < angB;
+              });
+
     return hull;
 }
 
@@ -120,5 +154,5 @@ std::vector<Point> graham_scan_convex_hull(std::vector<Point> points)
     // Reverse to get counter-clockwise order starting from the leftmost point
     std::reverse(lower.begin(), lower.end());
 
-    return lower; // Return the full hull
+    return lower;
 }
